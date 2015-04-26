@@ -16,7 +16,9 @@ Los lanzar un eventos es lanzar una señal. Las operaciones fundamentales son.
 2) Definir señales en funcion de otras señales.
 
 
-[] 2a Tarea: Root solver	
+[] 2a Tarea: Root solver
+
+PRUEBAS	
 Arranca console
 > import calculator._
 Defino tres señales
@@ -28,6 +30,13 @@ Defino tres señales
 > val solucion = Polynomial.computeSolutions(a,b,c,delta)
 > solucion()
 ¿COMO SE PUEDE ACTUALIZAR EL VALOR DE UN SEÑAL para que solucion funcione?
+
+[] 3a Tares: Calculadora tipo hoha de calculo
+Calculator.scala:computeValues()
+f: Mapa[String_NOMBRE_VARIABLE, Signal[Expresions_DE_LA_VARIABLE]] => Mapa[String_NOMBRE_VARIABEL, Signal[Double_RESULTADO_DE_EVALUAR_LA_EXPRESION]]
+
+PRUEBAS
+> import calculator._
 
  
 

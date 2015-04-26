@@ -51,4 +51,88 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     assert(resultRed2() == "red")
   }
 
+  test("testEval with a basic constant") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
+    var basicExpression =  Literal(1.0)
+    
+    assert(Calculator.eval(basicExpression, namedExpressions) == 1.0)
+  }
+  
+  test("testEval with a basic plus constants") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
+    var aExprex   = Literal(1.0)
+    var bExprex   = Literal(1.0)
+    var sumExprex = Plus(aExprex, bExprex) 
+    assert(Calculator.eval(sumExprex, namedExpressions) == 2.0)
+  }
+  
+  test("testEval with a basic minus constants") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
+    var aExprex   = Literal(3.0)
+    var bExprex   = Literal(5.0)
+    var sumExprex = Minus(aExprex, bExprex) 
+    assert(Calculator.eval(sumExprex, namedExpressions) == -2.0)
+  }
+  
+  test("testEval with a basic times constants") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
+    var aExprex   = Literal(3.0)
+    var bExprex   = Literal(5.0)
+    var sumExprex = Times(aExprex, bExprex) 
+    assert(Calculator.eval(sumExprex, namedExpressions) == 15.0)
+  }
+  
+  test("testEval with a basic divide constants") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
+    var aExprex   = Literal(15.0)
+    var bExprex   = Literal(3.0)
+    var sumExprex = Divide(aExprex, bExprex) 
+    assert(Calculator.eval(sumExprex, namedExpressions) == 5.0)
+  }
+  
+  test("testCalculatorCompute with only literals")
+  {
+    var nameExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(1.0)), "b" -> Signal(Literal(1.0)))
+    var computedValues = Calculator.computeValues(nameExpressions)
+    assert(computedValues("a")() == 1.0)
+    assert(computedValues("b")() == 1.0)
+    
+  }
+  
+  test("testCalculatorCompute with simple Plus and Minus literals")
+  {
+    var nameExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Plus(Literal(1.0),Literal(2.0))), 
+                                                              "b" -> Signal(Minus(Literal(5.0),Literal(2.0))))
+    var computedValues = Calculator.computeValues(nameExpressions)
+    assert(computedValues("a")() == 3.0)
+    assert(computedValues("b")() == 3.0)  
+  }
+  
+  test("testCalculatorCompute with simple Plus and Minus literals and single Ref")
+  {
+    var nameExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Plus(Literal(1.0),Literal(2.0))), 
+                                                              "b" -> Signal(Minus(Literal(5.0),Literal(2.0))),
+                                                              "c" -> Signal(Ref("a"))
+                                                             )
+    var computedValues = Calculator.computeValues(nameExpressions)
+    assert(computedValues("a")() == 3.0)
+    assert(computedValues("b")() == 3.0)
+    assert(computedValues("c")() == 3.0) 
+  }
+  
+  test("should solve cyclic computations") {
+    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Ref("b")))
+    namedExpressions = namedExpressions + ("b" -> Signal(Ref("a")))
+    // detects cyclic variables with the eval method
+    assert(java.lang.Double.isNaN(Calculator.eval(Ref("a"), namedExpressions)))
+    assert(java.lang.Double.isNaN(Calculator.eval(Ref("b"), namedExpressions)))
+
+    // detects cyclic variables with the computeValues method
+    var exprSignals = Calculator.computeValues(namedExpressions)
+    val signalA = exprSignals.getOrElse("a", Var(0.0))
+    assert(java.lang.Double.isNaN(signalA()))
+    val signalB = exprSignals.getOrElse("b", Var(0.0))
+    assert(java.lang.Double.isNaN(signalB()))
+  }
+  
 }

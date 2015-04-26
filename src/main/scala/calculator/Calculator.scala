@@ -9,13 +9,54 @@ final case class Times(a: Expr, b: Expr) extends Expr
 final case class Divide(a: Expr, b: Expr) extends Expr
 
 object Calculator {
-  def computeValues(
-      namedExpressions: Map[String, Signal[Expr]]): Map[String, Signal[Double]] = {
-    ???
+  
+  def computeValues(namedExpressions: Map[String, Signal[Expr]]): Map[String, Signal[Double]] = {
+    println("Computando valores de la calculadora")
+    //Ejemplo de recorrer array: namedExpressions.foreach(p => println(">> key=" + p._1 + ", value="+ eval( p._2(), namedExpressions)))
+    //Pero el siguiente es mas limpio
+    for((a,b) <- namedExpressions) println(">> key: "+a+"->"+b())
+    
+    namedExpressions map {
+      case (variable, signalExpr) => (variable, Signal{
+          println("Evaluando variable " + variable)
+          eval(signalExpr(), namedExpressions)
+        }
+      )
+    }
   }
 
   def eval(expr: Expr, references: Map[String, Signal[Expr]]): Double = {
-    ???
+    println("Evaluando una expresion")
+    expr match{
+      case Literal(v)   => {
+        println("Evalua un literal")
+        v 
+      }
+      case Ref(ref)     => {
+        println("Evalua una referencia")
+        eval(references(ref)(), references)
+      }
+      case Plus(a, b)   => {
+        println("Evalua la suma")
+        eval(a, references) + eval(b, references)
+      } 
+      case Minus(a, b)  => {
+        println("Evalua la resta")
+        eval(a, references) - eval(b, references)
+      }
+      case Times(a, b)  => {
+        println("Evalua la multiplicacion")
+        eval(a, references) * eval(b, references)
+      }
+      case Divide(a, b) => {
+        println("Evalua la division")
+        eval(a, references) / eval(b, references)
+      }
+      case _            => {
+        println("No reconoce la expresion")
+        Double.NaN
+      }
+    } 
   }
 
   /** Get the Expr for a referenced variables.
