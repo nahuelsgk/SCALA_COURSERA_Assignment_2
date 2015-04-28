@@ -35,13 +35,16 @@ object Calculator {
       } 
       case Ref(ref)     => {
         
-        if(  Ref(ref) == getReferenceExpr(ref,references)  ){
+        /*if(  Ref(ref) == getReferenceExpr(ref,references)  ){
           //for((a,b) <- references) println(">> key: "+a+"->"+b)
           val dereferences = references - ref
           //for((a,b) <- dereferences) println(">> key: "+a+"->"+b)
           eval(getReferenceExpr(ref,dereferences), dereferences)
         } 
-        else eval(getReferenceExpr(ref,references), references) 
+        else eval(getReferenceExpr(ref,references), references)*/
+        val dereferences = references - ref
+        eval(getReferenceExpr(ref,references), dereferences)
+        
       }
       case Plus(a, b)   => {
         //println("Evalua la suma")
