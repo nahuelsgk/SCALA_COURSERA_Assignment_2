@@ -5,7 +5,7 @@ object TweetLength {
 
    
   def tweetRemainingCharsCount(tweetText: Signal[String]): Signal[Int] = {
-    println("Calculando remaining chars")
+    //println("Calculando remaining chars")
     /*Signal 
         {
           val string = tweetText()
@@ -18,8 +18,8 @@ object TweetLength {
   def colorForRemainingCharsCount(remainingCharsCount: Signal[Int]): Signal[String] = {
     val remaining = remainingCharsCount()
     Signal{
-      println("Prueba de que no depende del tiempo esta evaluacion:" + remaining)  //Fijate en el console. Siempre es el mismo. Porque no se actualiza.
-      println("Numero de chars remanentes: "+remainingCharsCount())
+      //println("Prueba de que no depende del tiempo esta evaluacion:" + remaining)  //Fijate en el console. Siempre es el mismo. Porque no se actualiza.
+      //println("Numero de chars remanentes: "+remainingCharsCount())
       remainingCharsCount() match {
         case good if 14  < good                => "green"
         case warn if 0   <= warn && warn <= 14 => "orange"

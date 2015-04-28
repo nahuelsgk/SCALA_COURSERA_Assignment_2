@@ -5,15 +5,16 @@ import math.sqrt
 object Polynomial {
   def computeDelta(a: Signal[Double], b: Signal[Double], c: Signal[Double]): Signal[Double] = {
       Signal{
-        println("Computando delta de la ecuacion "+a()+"x^2+"+b()+"x+"+c())
-        (b()*b())-(4*a()*b())
+        //println("Computando delta de la ecuacion "+a()+"x^2+"+b()+"x+"+c())
+        //println((b()*b())-(4*a()*c()))
+        (b()*b())-(4*a()*c())
       }
   }
 
   def computeSolutions(a: Signal[Double], b: Signal[Double], c: Signal[Double], delta: Signal[Double]): Signal[Set[Double]] = {
       
     Signal{
-        println("Computando solucion de la ecuacion "+a()+"x^2+"+b()+"x+"+c())  
+        //println("Computando solucion de la ecuacion "+a()+"x^2+"+b()+"x+"+c())  
         delta() match {
           case negative if negative <  0.0 => Set()
           case zero     if zero     == 0.0 => Set((b() * -1)/(2*a()))

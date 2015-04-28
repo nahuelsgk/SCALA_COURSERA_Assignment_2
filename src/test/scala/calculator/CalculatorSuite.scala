@@ -51,6 +51,14 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     assert(resultRed2() == "red")
   }
 
+  test("computedelta")
+  {
+    var a = Signal(1.0)
+    var b = Signal(2.0)
+    var c = Signal(1.0)
+    assert(Polynomial.computeDelta(a,b,c)() == Signal(0.0)())
+  }
+    
   test("testEval with a basic constant") {
     var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Literal(2.0)))
     var basicExpression =  Literal(1.0)
@@ -120,19 +128,25 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     assert(computedValues("c")() == 3.0) 
   }
   
-  test("should solve cyclic computations") {
-    var namedExpressions: Map[String, Signal[Expr]] = Map() + ("a" -> Signal(Ref("b")))
-    namedExpressions = namedExpressions + ("b" -> Signal(Ref("a")))
-    // detects cyclic variables with the eval method
-    assert(java.lang.Double.isNaN(Calculator.eval(Ref("a"), namedExpressions)))
-    assert(java.lang.Double.isNaN(Calculator.eval(Ref("b"), namedExpressions)))
-
-    // detects cyclic variables with the computeValues method
-    var exprSignals = Calculator.computeValues(namedExpressions)
-    val signalA = exprSignals.getOrElse("a", Var(0.0))
-    assert(java.lang.Double.isNaN(signalA()))
-    val signalB = exprSignals.getOrElse("b", Var(0.0))
-    assert(java.lang.Double.isNaN(signalB()))
+  test("cyclic") {
+    val input: Map[String, Signal[Expr]] = Map(
+      "a" -> Signal { Ref("a") })
+    
+    val results = Calculator.computeValues(input)
+    
+    for ((k,result) <- results.mapValues(x => x())) 
+      assert(result.isNaN())
+  }
+  
+  test("cyclic2") {
+    val input: Map[String, Signal[Expr]] = Map(
+      "a" -> Signal { Plus(Literal(3), Ref("b")) },
+      "b" -> Signal { Plus(Ref("a"), Literal(1)) })
+    
+    val results = Calculator.computeValues(input)
+    
+    for ((k,result) <- results.mapValues(x => x())) 
+      assert(result.isNaN())
   }
   
 }
